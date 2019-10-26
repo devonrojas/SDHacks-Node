@@ -57,15 +57,27 @@ const resolvers = {
     },
     transactions: (obj, { ids }) => {
       return new Promise((resolve, reject) => {
-        DB.Transaction.find({ id: { $in: ids } }, (err, docs) => {
-          if (err) {
-            console.error(err);
-            throw new Error("Could not find all transactions")
-          } else {
-            let transactions = docs.map(doc => new Transaction(doc.id, doc.studentID, doc.itemID, doc.vendorID, doc.qty, doc.timestamp));
-            resolve(transactions);
-          }
-        })
+        if (ids) {
+          DB.Transaction.find({ id: { $in: ids } }, (err, docs) => {
+            if (err) {
+              console.error(err);
+              throw new Error("Could not find all transactions")
+            } else {
+              let transactions = docs.map(doc => new Transaction(doc.id, doc.studentID, doc.itemID, doc.vendorID, doc.qty, doc.timestamp));
+              resolve(transactions);
+            }
+          })
+        } else {
+          DB.Transaction.find({}, (err, docs) => {
+            if (err) {
+              console.error(err);
+              throw new Error("Could not find all transactions")
+            } else {
+              let transactions = docs.map(doc => new Transaction(doc.id, doc.studentID, doc.itemID, doc.vendorID, doc.qty, doc.timestamp));
+              resolve(transactions);
+            }
+          })
+        }
       })
     }
   },
