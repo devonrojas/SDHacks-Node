@@ -28,32 +28,31 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  salt: {
-    type: String,
-    required: true
-  },
-  hashedPassword: {
+  password: {
     type: String,
     required: true
   }
-})
-
-UserSchema.methods.generateSalt = function () {
-  return bcrypt.genSalt(saltRounds);
-}
-
-UserSchema.methods.hashPassword = function (password) {
-  return bcrypt.hash(password, this.salt);
-}
+});
 
 UserSchema.methods.checkPassword = function (password) {
-  return bcrypt.compare(password, this.hash);
+  return bcrypt.compare(password, this.password);
 }
 
-UserSchema.virtual('password')
-  .set(async function (password) {
-    this.salt = await this.generateSalt();
-    this.hashedPassword = await this.hashPassword(password);
+UserSchema.pre('save', function (next) {
+  console.log("pre save", this);
+  return bcrypt.hash(this.password, saltRounds, (err, hash) => {
+    if (err) return next(err);
+    this.password = hash;
+    return next();
   })
+})
+
+// UserSchema.virtual('password')
+//   .set(async function (password) {
+//     this.salt = await this.generateSalt();
+//     this.hashedPassword = await this.hashPassword(password);
+//     console.log(this);
+//   })
+//   .get(() => this.hashedPassword);
 
 module.exports = mongoose.model('User', UserSchema)

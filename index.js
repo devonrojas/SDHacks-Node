@@ -6,6 +6,7 @@ const app = express();
 const path = require('path');
 
 const cors = require("cors");
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const checkToken = require('./server/helpers').checkToken;
 
@@ -14,6 +15,8 @@ const Router = require('./server/routes');
 
 // Middleware
 app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 // Endpoints

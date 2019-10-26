@@ -5,4 +5,6 @@ const helpers = require('../helpers');
 
 Router.post("/login", helpers.auth.login);
 
+Router.post("/create", helpers.auth.create);
+
 module.exports = Router;
