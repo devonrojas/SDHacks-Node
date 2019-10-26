@@ -40,6 +40,16 @@ item
 }
 ```
 
+items
+```
+{
+  "query": "query($ids: [String], { items(ids: $ids) { id description category price } }),
+  "variables": {
+    "ids": "<String[]>"
+  }
+}
+```
+
 addItem
 ```
 {
@@ -65,7 +75,7 @@ transaction
 addTransaction
 ```
 {
-  "query": "mutation($transaction: TransactionInput!) { id studentID itemID vendorID qty timestamp }",
+  "query": "mutation($transaction: TransactionInput!) { addTransaction(transaction: $transaction) { id studentID itemID vendorID qty timestamp } }",
   "variables": {
     "transaction": {
       "studentID": "<studentID>",

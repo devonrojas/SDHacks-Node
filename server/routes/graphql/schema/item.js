@@ -4,7 +4,7 @@ const DB = require('../../../services').database;
 const typeDef = gql`
   type Query {
     item(id: String!): Item!
-    items(ids: [String!]): [Item]
+    items(ids: [String]): [Item]
   }
 
   type Mutation {
@@ -52,15 +52,27 @@ const resolvers = {
     },
     items: (obj, { ids }) => {
       return new Promise((resolve, reject) => {
-        DB.Item.find({ id: { $in: ids } }, (err, docs) => {
-          if (err) {
-            console.error(err);
-            throw new Error("Could not find all items")
-          } else {
-            let items = docs.map(doc => new Item(doc.id, doc.description, doc.category, doc.price));
-            resolve(items);
-          }
-        })
+        if (ids) {
+          DB.Item.find({ id: { $in: ids } }, (err, docs) => {
+            if (err) {
+              console.error(err);
+              throw new Error("Could not find all items")
+            } else {
+              let items = docs.map(doc => new Item(doc.id, doc.description, doc.category, doc.price));
+              resolve(items);
+            }
+          })
+        } else {
+          DB.Item.find({}, (err, docs) => {
+            if (err) {
+              console.error(err);
+              throw new Error("Could not retrieve items")
+            } else {
+              let items = docs.map(doc => new Item(doc.id, doc.description, doc.category, doc.price));
+              resolve(items);
+            }
+          })
+        }
       })
     }
   },
