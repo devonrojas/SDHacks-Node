@@ -17,12 +17,9 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  studentId: {
+  id: {
     type: Number,
     required: true
-  },
-  phone: {
-    type: Number
   },
   dateCreated: {
     type: Date,
@@ -39,20 +36,11 @@ UserSchema.methods.checkPassword = function (password) {
 }
 
 UserSchema.pre('save', function (next) {
-  console.log("pre save", this);
   return bcrypt.hash(this.password, saltRounds, (err, hash) => {
     if (err) return next(err);
     this.password = hash;
     return next();
   })
 })
-
-// UserSchema.virtual('password')
-//   .set(async function (password) {
-//     this.salt = await this.generateSalt();
-//     this.hashedPassword = await this.hashPassword(password);
-//     console.log(this);
-//   })
-//   .get(() => this.hashedPassword);
 
 module.exports = mongoose.model('User', UserSchema)

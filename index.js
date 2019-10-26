@@ -11,7 +11,7 @@ const morgan = require('morgan');
 const checkToken = require('./server/helpers').checkToken;
 
 // Routes
-const Router = require('./server/routes');
+const server = require('./server/routes/graphql');
 
 // Middleware
 app.use(cors());
@@ -20,8 +20,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 // Endpoints
-app.use("/", express.static(path.join(__dirname, 'client', 'dist')));
-app.use('/auth', Router.authRouter);
-app.use('/api', checkToken, Router.apiRouter);
+server.applyMiddleware({ app });
 
-app.listen(PORT, () => console.log("Listening on port " + PORT + "..."));
+app.listen(PORT, () => console.log("Server ready at " + server.graphqlPath));
