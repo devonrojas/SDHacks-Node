@@ -3,7 +3,7 @@ const DB = require('../../../services').database;
 
 const typeDef = gql`
   type Query {
-    vendor(id: String!): Vendor
+    vendor(id: String!): Vendor!
     vendors(ids: [String!]): [Vendor]
   }
 
@@ -49,6 +49,14 @@ const resolvers = {
       return new Promise((resolve, reject) => {
         DB.Vendor.find({
           id: { $in: ids }
+        }, (err, docs) => {
+          if (err) {
+            console.error(err);
+            throw new Error("Could not find all vendors")
+          } else {
+            let vendors = docs.map(doc => new Vendor(doc.id, doc.name, doc.category));
+            resolve(vendors);
+          }
         })
       })
     }

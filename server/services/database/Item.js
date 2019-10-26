@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const ItemSchema = new Schema({
   id: {
     type: String,
-    default: mongoose.Types.ObjectId()
+    default: mongoose.Types.ObjectId
   },
   description: {
     type: String,

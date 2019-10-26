@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const VendorSchema = new Schema({
   id: {
     type: String,
-    default: mongoose.Types.ObjectId()
+    default: mongoose.Types.ObjectId
   },
   name: {
     type: String,

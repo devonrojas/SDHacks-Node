@@ -3,11 +3,12 @@ const DB = require("../../../services").database;
 
 const typeDef = gql`
   type Query {
-    transaction(id: String!): Transaction
+    transaction(id: String!): Transaction!
+    transactions(ids: [String!]): [Transaction]
   }
 
   type Mutation {
-    addTransaction(transaction: TransactionInput!): Transaction
+    addTransaction(transaction: TransactionInput!): Transaction!
   }
 
   type Transaction {
@@ -50,6 +51,19 @@ const resolvers = {
             let trx = docs[0];
             let t = new Transaction(trx.id, trx.studentID, trx.itemID, trx.vendorID, trx.qty, trx.timestamp);
             resolve(t);
+          }
+        })
+      })
+    },
+    transactions: (obj, { ids }) => {
+      return new Promise((resolve, reject) => {
+        DB.Transaction.find({ id: { $in: ids } }, (err, docs) => {
+          if (err) {
+            console.error(err);
+            throw new Error("Could not find all transactions")
+          } else {
+            let transactions = docs.map(doc => new Transaction(doc.id, doc.studentID, doc.itemID, doc.vendorID, doc.qty, doc.timestamp));
+            resolve(transactions);
           }
         })
       })

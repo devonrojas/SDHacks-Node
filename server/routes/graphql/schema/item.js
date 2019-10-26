@@ -3,7 +3,8 @@ const DB = require('../../../services').database;
 
 const typeDef = gql`
   type Query {
-    item(id: String!): Item
+    item(id: String!): Item!
+    items(ids: [String!]): [Item]
   }
 
   type Mutation {
@@ -45,6 +46,19 @@ const resolvers = {
             let item = docs[0];
             let i = new Item(item.id, item.description, item.category, item.price)
             resolve(i);
+          }
+        })
+      })
+    },
+    items: (obj, { ids }) => {
+      return new Promise((resolve, reject) => {
+        DB.Item.find({ id: { $in: ids } }, (err, docs) => {
+          if (err) {
+            console.error(err);
+            throw new Error("Could not find all items")
+          } else {
+            let items = docs.map(doc => new Item(doc.id, doc.description, doc.category, doc.price));
+            resolve(items);
           }
         })
       })

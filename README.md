@@ -88,7 +88,7 @@ vendor
 addVendor
 ```
 {
-  "query": "mutation($vendor: VendorInput!) { id name category }",
+  "query": "mutation($vendor: VendorInput!) { addVendor(vendor: $vendor)  {id name category}}}",
   "variables": {
     "vendor": {
       "name: "<name>",
