@@ -29,7 +29,7 @@ type Query {
 }
 
 type Mutation {
-  createUser(user: UserInput): AuthUser
+  createUser(user: UserInput!): AuthUser
 }
 `;
 
@@ -96,7 +96,7 @@ const resolvers = {
           } else {
             let u = new User({ username: user.username, id: user.id, displayName: user.displayName, email: user.email });
             let token = generateToken(user.username);
-            resolve(new AuthUser({ u, token }));
+            resolve(new AuthUser(u, token));
           }
         })
       })

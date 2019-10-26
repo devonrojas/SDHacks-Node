@@ -3,7 +3,7 @@ const DB = require('../../../services').database;
 
 const typeDef = gql`
   type Query {
-    item(id: String!): String
+    item(id: String!): Item
   }
 
   type Mutation {
@@ -42,7 +42,9 @@ const resolvers = {
             console.error(err);
             throw new Error("No item found for id:" + id);
           } else {
-            resolve(docs[0]);
+            let item = docs[0];
+            let i = new Item(item.id, item.description, item.category, item.price)
+            resolve(i);
           }
         })
       })

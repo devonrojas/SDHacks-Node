@@ -4,6 +4,7 @@ const DB = require('../../../services').database;
 const typeDef = gql`
   type Query {
     vendor(id: String!): Vendor
+    vendors(ids: [String!]): [Vendor]
   }
 
   type Mutation {
@@ -41,6 +42,13 @@ const resolvers = {
           } else {
             resolve(docs[0]);
           }
+        })
+      })
+    },
+    vendors: (obj, { ids }) => {
+      return new Promise((resolve, reject) => {
+        DB.Vendor.find({
+          id: { $in: ids }
         })
       })
     }
