@@ -23,4 +23,4 @@ app.get('/', (req, res) => {
 })
 server.applyMiddleware({ app });
 
-app.listen(PORT, () => console.log("Server ready at " + server.graphqlPath));
+app.listen(PORT, () => console.log("Server ready at " + server.graphqlPath + ". Port: " + PORT));
