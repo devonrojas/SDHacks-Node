@@ -177,9 +177,9 @@ const resolvers = {
             console.error(err);
             throw new Error("Could not add transaction");
           } else {
-            let items = trx.items.map(item => new ShortItem(item.id, item.qty));
-            let t = new Transaction(trx.id, trx.studentID, items, trx.vendorID, trx.qty, trx.timestamp);
-            resolve(t);
+            // let items = trx.items.map(item => new ShortItem(item.id, item.qty));
+            // let t = new Transaction(trx.id, trx.studentID, items, trx.vendorID, trx.qty, trx.timestamp);
+            resolve(trx);
           }
         })
       })
@@ -191,10 +191,10 @@ const resolvers = {
             console.error(err);
             throw new Error("Error adding transactions to database")
           } else {
-            let trxs = docs.map(doc => {
-              let items = doc.items.map(item => new ShortItem(item.id, item.qty));
-              return new Transaction(doc.id, doc.studentID, items, doc.vendorID, doc.qty, doc.timestamp)
-            });
+            // let trxs = docs.map(doc => {
+            //   let items = doc.items.map(item => new ShortItem(item.id, item.qty));
+            //   return new Transaction(doc.id, doc.studentID, items, doc.vendorID, doc.qty, doc.timestamp)
+            // });
             resolve(trxs);
           }
         })
