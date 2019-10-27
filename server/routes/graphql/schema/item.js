@@ -14,7 +14,7 @@ const typeDef = gql`
   input ItemInput {
     description: String!
     category: String!
-    price: Int!
+    price: Float!
     id: String!
   }
 
@@ -22,7 +22,7 @@ const typeDef = gql`
     id: String!
     description: String!
     category: String!
-    price: Int!
+    price: Float!
   }
 `;
 
