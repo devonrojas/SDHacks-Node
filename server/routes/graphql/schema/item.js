@@ -3,7 +3,7 @@ const DB = require('../../../services').database;
 
 const typeDef = gql`
   type Query {
-    item(id: String!): Item!
+    item(id: String!): Item
     items(ids: [String]): [Item]
   }
 
@@ -44,9 +44,13 @@ const resolvers = {
             console.error(err);
             throw new Error("No item found for id:" + id);
           } else {
-            let item = docs[0];
-            let i = new Item(item.id, item.description, item.category, item.price)
-            resolve(i);
+            if (docs.length !== 0) {
+              let item = docs[0];
+              let i = new Item(item.id, item.description, item.category, item.price)
+              resolve(i);
+            } else {
+              resolve();
+            }
           }
         })
       })
