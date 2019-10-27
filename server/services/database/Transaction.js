@@ -1,6 +1,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const ShortItemSchema = new Schema({
+  id: {
+    type: String,
+    required: true
+  },
+  qty: {
+    type: String,
+    required: true
+  }
+})
+
 const TransactionSchema = new Schema({
   id: {
     type: String,
@@ -10,16 +21,12 @@ const TransactionSchema = new Schema({
     type: String,
     required: true
   },
-  itemID: {
-    type: String,
+  items: {
+    type: [ShortItemSchema],
     required: true
   },
   vendorID: {
     type: String,
-    required: true
-  },
-  qty: {
-    type: Number,
     required: true
   },
   timestamp: {
