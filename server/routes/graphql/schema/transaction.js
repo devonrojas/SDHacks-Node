@@ -4,7 +4,7 @@ const DB = require("../../../services").database;
 const typeDef = gql`
   type Query {
     transaction(id: String!): Transaction!
-    transactions(ids: [String!]): [Transaction]
+    transactions(ids: [String]): [Transaction]
   }
 
   type Mutation {
