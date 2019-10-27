@@ -12,7 +12,7 @@ const morgan = require('morgan');
 const server = require('./server/routes/graphql');
 
 // Middleware
-app.use(cors({ origin: "*" }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
