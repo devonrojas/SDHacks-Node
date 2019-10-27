@@ -156,7 +156,7 @@ const resolvers = {
             let key = Object.keys(item)[0];
             let data = item[key];
             co2["breakdown"].push({
-              category: key,
+              type: key,
               dollarsSpent: data["dollarsSpent"],
               CO2Emissions: data["CO2Emissions"]
             })
