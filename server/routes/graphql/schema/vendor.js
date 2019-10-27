@@ -4,7 +4,7 @@ const DB = require('../../../services').database;
 const typeDef = gql`
   type Query {
     vendor(id: String!): Vendor!
-    vendors(ids: [String!]): [Vendor]
+    vendors(ids: [String]): [Vendor]
   }
 
   type Mutation {
@@ -47,17 +47,27 @@ const resolvers = {
     },
     vendors: (obj, { ids }) => {
       return new Promise((resolve, reject) => {
-        DB.Vendor.find({
-          id: { $in: ids }
-        }, (err, docs) => {
-          if (err) {
-            console.error(err);
-            throw new Error("Could not find all vendors")
-          } else {
-            let vendors = docs.map(doc => new Vendor(doc.id, doc.name, doc.category));
-            resolve(vendors);
-          }
-        })
+        if (ids) {
+          DB.Vendor.find({
+            id: { $in: ids }
+          }, (err, docs) => {
+            if (err) {
+              console.error(err);
+              throw new Error("Could not find all vendors")
+            } else {
+              resolve(docs);
+            }
+          })
+        } else {
+          DB.Vendor.find({}, (err, docs) => {
+            if (err) {
+              console.error(err);
+              throw new Error("Could not find all vendors")
+            } else {
+              resolve(docs);
+            }
+          })
+        }
       })
     }
   },

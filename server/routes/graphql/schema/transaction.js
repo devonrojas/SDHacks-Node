@@ -4,7 +4,7 @@ const DB = require("../../../services").database;
 const typeDef = gql`
   type Query {
     transaction(id: String!): Transaction!
-    transactions(ids: [String]): [Transaction]
+    transactions(ids: [String], start: String, end: String, studentID: String): [Transaction]
   }
 
   type Mutation {
@@ -14,9 +14,9 @@ const typeDef = gql`
 
   type Transaction {
     id: String!
-    studentID: String!
+    student: Student!
     items: [ExtendedItem]
-    vendorID: String!
+    vendor: String!
     timestamp: String!
   }
 
@@ -32,16 +32,23 @@ const typeDef = gql`
   }
 
   input ShortItemInput {
-    id: String!,
+    id: String!
     qty: Int!
   }
 
   type ExtendedItem {
-    id: String!,
+    id: String!
     description: String!
     category: String!
     price: Float!
     qty: Int
+  }
+
+  type Student {
+    id: String!
+    username: String!
+    displayName: String!
+    email: String!
   }
 `;
 
@@ -55,16 +62,6 @@ class Transaction {
 class ShortItem {
   constructor(id, qty) {
     this.id = id;
-    this.qty = qty;
-  }
-}
-
-class ExtendedItem {
-  constructor(id, description, category, price, qty) {
-    this.id = id;
-    this.description = description;
-    this.category = category;
-    this.price = price;
     this.qty = qty;
   }
 }
@@ -83,10 +80,17 @@ const resolvers = {
         })
       })
     },
-    transactions: (obj, { ids }) => {
+    transactions: (obj, { ids, start, end, studentID }) => {
       return new Promise((resolve, reject) => {
         if (ids) {
-          DB.Transaction.find({ id: { $in: ids } }, (err, docs) => {
+          let query = DB.Transaction.find({ id: { $in: ids } });
+          if (start && end) {
+            query.where('timestamp').gte(new Date(+start)).lte(new Date(+end));
+          }
+          if (studentID) {
+            query.where('studentID').equals(studentID);
+          }
+          query.exec((err, docs) => {
             if (err) {
               console.error(err);
               throw new Error("Could not find all transactions")
@@ -95,7 +99,14 @@ const resolvers = {
             }
           })
         } else {
-          DB.Transaction.find({}, (err, docs) => {
+          let query = DB.Transaction.find({});
+          if (start && end) {
+            query.where('timestamp').gte(new Date(+start)).lte(new Date(+end));
+          }
+          if (studentID) {
+            query.where('studentID').equals(studentID);
+          }
+          query.exec((err, docs) => {
             if (err) {
               console.error(err);
               throw new Error("Could not find all transactions")
@@ -125,6 +136,29 @@ const resolvers = {
               }
             })
             resolve(items);
+          }
+        })
+      })
+    },
+    student: (transaction) => {
+      return new Promise((resolve, reject) => {
+        DB.User.find({ id: transaction.studentID }, (err, docs) => {
+          if (err) {
+            throw new Error("Unexpected error occurred")
+          } else {
+            resolve(docs[0]);
+          }
+        })
+      })
+    },
+    vendor: (transaction) => {
+      return new Promise((resolve, reject) => {
+        DB.Vendor.find({ id: transaction.vendorID }, (err, docs) => {
+          if (err) {
+            console.error(err);
+            throw new Error("Unexpected error occurred");
+          } else {
+            resolve(docs[0].name)
           }
         })
       })
