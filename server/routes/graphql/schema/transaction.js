@@ -9,6 +9,7 @@ const typeDef = gql`
 
   type Mutation {
     addTransaction(transaction: TransactionInput!): Transaction!
+    addTransactions(transactions: [TransactionInput!]): [Transaction]
   }
 
   type Transaction {
@@ -91,6 +92,19 @@ const resolvers = {
           } else {
             let t = new Transaction(trx.id, trx.studentID, trx.itemID, trx.vendorID, trx.qty, trx.timestamp);
             resolve(t);
+          }
+        })
+      })
+    },
+    addTransactions: (obj, { transactions }) => {
+      return new Promise((resolve, reject) => {
+        DB.Transaction.insertMany(transactions, (err, docs) => {
+          if (err) {
+            console.error(err);
+            throw new Error("Error adding transactions to database")
+          } else {
+            let trxs = docs.map(doc => new Transaction(doc.id, doc.studentID, doc.itemID, doc.vendorID, doc.qty, doc.timestamp));
+            resolve(trxs);
           }
         })
       })
