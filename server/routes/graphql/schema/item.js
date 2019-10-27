@@ -15,6 +15,7 @@ const typeDef = gql`
     description: String!
     category: String!
     price: Int!
+    id: String!
   }
 
   type Item {
