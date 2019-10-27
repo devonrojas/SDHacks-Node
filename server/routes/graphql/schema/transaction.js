@@ -15,7 +15,7 @@ const typeDef = gql`
   type Transaction {
     id: String!
     studentID: String!
-    items: [ShortItem!]
+    items: [ExtendedItem]
     vendorID: String!
     timestamp: String!
   }
@@ -35,22 +35,36 @@ const typeDef = gql`
     id: String!,
     qty: Int!
   }
+
+  type ExtendedItem {
+    id: String!,
+    description: String!
+    category: String!
+    price: Float!
+    qty: Int
+  }
 `;
 
 class Transaction {
-  constructor(id, studentID, items, vendorID, qty, timestamp) {
-    this.id = id;
-    this.studentID = studentID;
+  constructor(transaction, items) {
+    this.transaction = transaction;
     this.items = items;
-    this.vendorID = vendorID;
-    this.qty = qty;
-    this.timestamp = timestamp;
   }
 }
 
 class ShortItem {
   constructor(id, qty) {
     this.id = id;
+    this.qty = qty;
+  }
+}
+
+class ExtendedItem {
+  constructor(id, description, category, price, qty) {
+    this.id = id;
+    this.description = description;
+    this.category = category;
+    this.price = price;
     this.qty = qty;
   }
 }
@@ -64,10 +78,7 @@ const resolvers = {
             console.error(err);
             throw new Error("No transaction found with id: " + id);
           } else {
-            let trx = docs[0];
-            let items = trx.items.map(item => new ShortItem(item.id, item.qty));
-            let t = new Transaction(trx.id, trx.studentID, items, trx.vendorID, trx.qty, trx.timestamp);
-            resolve(t);
+            resolve(docs[0]);
           }
         })
       })
@@ -80,13 +91,7 @@ const resolvers = {
               console.error(err);
               throw new Error("Could not find all transactions")
             } else {
-              let transactions = docs
-                .map(doc => {
-                  doc.items = doc.items.map(item => new ShortItem(item.id, item.qty));
-                  return doc;
-                })
-                .map(doc => new Transaction(doc.id, doc.studentID, doc.items, doc.vendorID, doc.qty, doc.timestamp));
-              resolve(transactions);
+              resolve(docs);
             }
           })
         } else {
@@ -95,17 +100,39 @@ const resolvers = {
               console.error(err);
               throw new Error("Could not find all transactions")
             } else {
-              let transactions = docs
-                .map(doc => {
-                  doc.items = doc.items.map(item => new ShortItem(item.id, item.qty));
-                  return doc;
-                })
-                .map(doc => new Transaction(doc.id, doc.studentID, doc.items, doc.vendorID, doc.qty, doc.timestamp));
-              resolve(transactions);
+              resolve(docs);
             }
           })
         }
       })
+    }
+  },
+  Transaction: {
+    items: (transaction) => {
+      return new Promise((resolve, reject) => {
+        DB.Item.find({ id: { $in: transaction.items.map(item => item.id) } }, (err, docs) => {
+          if (err) {
+            console.error(err);
+            throw new Error("Unexpected error")
+          } else {
+            let items = transaction.items.map((item, index) => {
+              return {
+                id: item.id,
+                qty: item.qty,
+                description: docs[index].description,
+                category: docs[index].category,
+                price: docs[index].price
+              }
+            })
+            resolve(items);
+          }
+        })
+      })
+    }
+  },
+  ExtendedItem: {
+    qty: (item) => {
+      return +item.qty;
     }
   },
   Mutation: {
