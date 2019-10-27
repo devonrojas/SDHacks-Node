@@ -5,21 +5,22 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const checkToken = require('./server/helpers').checkToken;
 
 // Routes
-const Router = require('./server/routes');
+const server = require('./server/routes/graphql');
 
 // Middleware
 app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 // Endpoints
-app.get("/", (req, res) => {
-  res.status(200).send("Welcome to Carbon!");
+app.get('/', (req, res) => {
+  res.status(200).send("Welcome to Carbon3!");
 })
-app.use('/auth', Router.authRouter);
-app.use('/api', checkToken, Router.apiRouter);
+server.applyMiddleware({ app });
 
-app.listen(PORT, () => console.log("Listening on port " + PORT + "..."));
+app.listen(PORT, () => console.log("Server ready at " + server.graphqlPath + ". Port: " + PORT));

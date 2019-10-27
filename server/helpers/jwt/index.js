@@ -1,13 +1,17 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+const generateToken = (username) => {
+  return jwt.sign({ username: username }, process.env.JWT_SECRET, { expiresIn: '24h' })
+}
+
 const checkToken = (req, res, next) => {
   let token = req.headers['x-access-token'] || req.headers['authorization'];
 
   if (token) {
 
     if (token.startsWith('Bearer')) {
-      token = token.slice(7, -1);
+      token = token.slice(7, token.length);
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
@@ -29,4 +33,4 @@ const checkToken = (req, res, next) => {
   }
 }
 
-module.exports = checkToken
+module.exports = { checkToken, generateToken }

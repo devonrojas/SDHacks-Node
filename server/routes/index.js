@@ -1,7 +1,5 @@
-const apiRouter = require('./api/index.js');
-const authRouter = require('./auth');
+const graphQLRouter = require('./graphql');
 
 module.exports = {
-  apiRouter,
-  authRouter
+  graphQLRouter
 }

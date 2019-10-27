@@ -1,7 +1,6 @@
-const checkToken = require('./jwt');
-const auth = require("./auth");
+const { checkToken, generateToken } = require('./jwt');
 
 module.exports = {
   checkToken,
-  auth
+  generateToken
 }
